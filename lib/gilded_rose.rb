@@ -9,80 +9,61 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      if item.name != aged_brie? and item.name != backstage_pass?
-        if item.quality > MIN_QUALITY
-          if item.name != sulfuras?
-            item.quality = item.quality - 1
-          end
-        end
+      if item.name == sulfuras?
+        maintain_sulfuras(item)
+      elsif item.name == backstage_pass?
+        update_backstage_pass(item)
+      elsif item.name == aged_brie?
+        increase_aged_brie(item)
       else
-        if item.quality < MAX_QUALITY
-          item.quality = item.quality + 1
-          if item.name == backstage_pass?
-            if item.sell_in < 11
-              if item.quality < MAX_QUALITY
-                item.quality = item.quality + 1
-              end
-            end
-            if item.sell_in < 6
-              if item.quality < MAX_QUALITY
-                item.quality = item.quality + 1
-              end
-            end
-          end
-        end
-      end
-      if item.name != sulfuras?
-        item.sell_in = item.sell_in - 1
-      end
-      if item.sell_in < 0
-        if item.name != aged_brie?
-          if item.name != backstage_pass?
-            if item.quality > MIN_QUALITY
-              if item.name != sulfuras?
-                item.quality = item.quality - 1
-              end
-            end
-          else
-            item.quality = item.quality - item.quality
-          end
-        else
-          if item.quality < MAX_QUALITY
-            item.quality = item.quality + 1
-          end
-        end
+        decrease_standard_item(item)
       end
     end
   end
 
-    def decrease_backstage_pass(item)
-        if item.sell_in <= 0
-          item.quality = MIN_QUALITY
-        elsif item.sell_in < 11 && item.quality < MAX_QUALITY
-          item.quality = item.quality + 2
-        elsif item.sell_in < 6 && item.quality < MAX_QUALITY
-          item.quality = item.quality + 3
-        else
-          item.quality = item.quality + 1
-        end
+  def update_backstage_pass(item)
+    if item.sell_in == 0
+      item.quality -= item.quality
+    elsif item.sell_in < 6 && item.quality < MAX_QUALITY
+      item.quality = item.quality + 3
+    elsif item.sell_in < 11 && item.quality < MAX_QUALITY
+      item.quality = item.quality + 2
+    else
+      item.quality += item.quality
     end
+  end
 
-    def increase_aged_brie(item)
+  def maintain_sulfuras(item)
+    item.quality = SULFURAS
+    item.sell_in = item.sell_in
+  end
 
+  def decrease_standard_item(item)
+    if item.sell_in > 0
+      item.quality = item.quality - 1
+      item.sell_in = item.sell_in - 1
+    else
+      item.quality = item.quality - 2
+      item.sell_in = item.sell_in - 1
     end
+  end
 
-    def backstage_pass?
-      "Backstage passes to a TAFKAL80ETC concert"
-    end
+  def increase_aged_brie(item)
+    item.quality = item.quality + 1
+    item.sell_in = item.sell_in - 1
+  end
 
-    def aged_brie?
-      "Aged Brie"
-    end
+  def backstage_pass?
+    "Backstage passes to a TAFKAL80ETC concert"
+  end
 
-    def sulfuras?
-      "Sulfuras, Hand of Ragnaros"
-    end
+  def aged_brie?
+    "Aged Brie"
+  end
 
+  def sulfuras?
+    "Sulfuras, Hand of Ragnaros"
+  end
 end
 
 class Item

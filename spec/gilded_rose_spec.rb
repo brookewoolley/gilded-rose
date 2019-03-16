@@ -10,7 +10,8 @@ describe GildedRose do
 
     it "decreases the quality value at the end of each day " do
       items = [Item.new("foo", 20, 50)]
-      expect{ GildedRose.new(items).update_quality() }.to change{ items[0].quality }.by(-1)
+      GildedRose.new(items).update_quality()
+      expect(items[0].quality).to eq(49)
     end
 
     it 'decreases the quality value by 2 if the sell by date has passed' do
@@ -20,7 +21,8 @@ describe GildedRose do
 
     it "decreases the sell_in value at the end of each day " do
       items = [Item.new("foo", 20, 50)]
-      expect{ GildedRose.new(items).update_quality() }.to change{ items[0].sell_in }.by(-1)
+      GildedRose.new(items).update_quality()
+      expect(items[0].sell_in).to eq(19)
     end
 
     it 'does not update the quality of Sulfuras' do
@@ -52,7 +54,8 @@ describe GildedRose do
 
     it 'drops quality to 0 for backstage passes after the sell_in date has passed' do
       items = [Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10)]
-      expect{ GildedRose.new(items).update_quality() }.to change{ items[0].quality }.by(-10)
+      GildedRose.new(items).update_quality()
+      expect(items[0].quality).to eq(0)
     end
 
   end
