@@ -1,9 +1,12 @@
 require 'item'
 
 class GildedRose
-  SULFURAS = 80
   MAX_QUALITY = 50
   MIN_QUALITY = 0
+  AGED_BRIE = "Aged Brie"
+  SULFURAS = "Sulfuras, Hand of Ragnaros"
+  BACKSTAGE_PASS = "Backstage passes to a TAFKAL80ETC concert"
+  CONJURED = "Conjured"
 
   def initialize(items)
     @items = items
@@ -11,17 +14,23 @@ class GildedRose
 
   def update_quality()
     @items.each do |item|
-      if item.name == sulfuras?
-        maintain_sulfuras(item)
-      elsif item.name == backstage_pass?
+      if item.name == SULFURAS
+        maintain_item(item)
+      elsif item.name == BACKSTAGE_PASS
         update_backstage_pass(item)
-      elsif item.name == aged_brie?
-        increase_aged_brie(item)
+      elsif item.name == AGED_BRIE
+        increase_quality_by_one(item)
+        decrease_sellin_by_one(item)
+      elsif item.name == CONJURED
+        decrease_quality_by_two(item)
+        decrease_sellin_by_one(item)
       else
         decrease_standard_item(item)
       end
     end
   end
+
+  private
 
   def update_backstage_pass(item)
     if item.sell_in == 0
@@ -31,39 +40,35 @@ class GildedRose
     elsif item.sell_in < 11 && item.quality < MAX_QUALITY
       item.quality = item.quality + 2
     else
-      item.quality += item.quality
+      increase_quality_by_one(item)
     end
   end
 
-  def maintain_sulfuras(item)
-    item.quality = SULFURAS
+  def maintain_item(item)
+    item.quality = item.quality
     item.sell_in = item.sell_in
   end
 
   def decrease_standard_item(item)
     if item.sell_in > 0
       item.quality = item.quality - 1
-      item.sell_in = item.sell_in - 1
+      decrease_sellin_by_one(item)
     else
-      item.quality = item.quality - 2
-      item.sell_in = item.sell_in - 1
+      decrease_quality_by_two(item)
+      decrease_sellin_by_one(item)
     end
   end
 
-  def increase_aged_brie(item)
+  def increase_quality_by_one(item)
     item.quality = item.quality + 1
+  end
+
+  def decrease_sellin_by_one(item)
     item.sell_in = item.sell_in - 1
   end
 
-  def backstage_pass?
-    "Backstage passes to a TAFKAL80ETC concert"
+  def decrease_quality_by_two(item)
+    item.quality = item.quality - 2
   end
 
-  def aged_brie?
-    "Aged Brie"
-  end
-
-  def sulfuras?
-    "Sulfuras, Hand of Ragnaros"
-  end
 end
